@@ -91,6 +91,7 @@ body{
   justify-content: space-between;
   width: 180px;
   /*min-width: 185px;*/
+  
 }
 
 .comment .userProf{
@@ -183,14 +184,16 @@ body{
 }
 
 
-.reply .header .userProf{
+.replyuser .header .userProf{
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 50%;
   min-width: 205px;
-
+ /*border: 1px solid red;*/
 }
+
+
 
 .userProf .user{
   width: 65%;
