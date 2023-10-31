@@ -2,22 +2,27 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import DATA from './data.json'
 
-/*its okay if you cant understand my code, i confuse myself too lmao*/
+/*Goodluck,  to whoever's reading my code :), or is it whomever???*/
 
 export default function App(){
   const [currentUser, setCurrentUser] = useState(DATA.currentUser)
-  const [comments, setComments] = useState(DATA.comments)
+  const [comments, setComments] = useState(()=>{
+    const gottenComments = JSON.parse(localStorage.getItem('comments'))
+    if(!gottenComments){
+      return DATA.comments
+    } else{
+      return gottenComments
+    }
+  })
   const [userComment, setUserComment] = useState('')
   const [Reply, setReply] = useState('')
   const [edit, setEdit] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [showReplyModal, setShowReplyModal] = useState(false)
   const [delteComment, setDeleteComment] = useState(true)
-  /*const [Replies, setReplies] = useState(comments.map(comment=>{
-    return comment.replies
-  }))*/
 
- useEffect(()=>{
+
+useEffect(()=>{
 
   const newOne  = comments.map(comment=>{
     const reply = comment.replies
@@ -25,18 +30,49 @@ export default function App(){
       return {...rep, isEditing:false}
     })}
   })
-  /*setComments(newOne)*/
+ 
+ 
   setComments(newOne)
+  comments.sort((a, b)=>{
+    return b.score - a.score
+  })
+
+
+
+
+
  }, [])
+
+
+
+
+  
+
+
+useEffect(()=>{
+
+ localStorage.setItem('comments', JSON.stringify(comments))
+
+ }, [comments])
 
 
 
   function handleComment(){
     if(userComment){
+      const today = new Date()
+      const dd = today.getDate()
+      const mm = today.getMonth() + 1
+      const yy = today.getFullYear() % 100
+      const hr = today.getHours()
+      const mi = today.getMinutes()
+
+      const createdAt = `${dd<10?`0${dd}`:dd}/${mm<10?`0${mm}`:mm}/${yy} @${hr<10 ?`0${hr}`:hr}:${mi<10 ?`0${mi}`:mi}`
+
+      
       setComments([...comments, {
         "id": comments.length+1,
         "content": userComment,
-        "createdAt": "just now",
+        "createdAt": createdAt ,
         "score": 0,
         "user": {
           "image": { 
@@ -60,7 +96,18 @@ export default function App(){
         return comment
       }
     })
+
+    newOne.sort((a, b)=>{
+      return b.score - a.score
+    })
+
     setComments(newOne)
+
+
+   
+
+
+   
   }
 
   function handleSub(id){
@@ -72,6 +119,11 @@ export default function App(){
         return comment
       }
     })
+
+    newOne.sort((a, b)=>{
+      return b.score - a.score
+    })
+
     setComments(newOne)
   }
 
@@ -80,7 +132,7 @@ export default function App(){
   function handleAddReply(comment, id){
     const ID = comment.id
    const Reply = comment.replies
-   const newOne = comments.map(comment=>{
+   let newOne = comments.map(comment=>{
     if(comment.id === ID){
       return {...comment, replies: Reply.map(rep=>{
         const score = rep.score
@@ -94,13 +146,21 @@ export default function App(){
       return comment
     }
    })
+
+   newOne = newOne.map(one=>{
+    const Reply = one.replies
+    return {...one, replies: Reply.sort((a, b)=>{
+      return b.score - a.score
+    })}
+   })
+
     setComments(newOne)
   }
 
   function handleSubReply(comment, id){
     const ID = comment.id
     const Reply = comment.replies
-    const newOne = comments.map(comment=>{
+    let newOne = comments.map(comment=>{
      if(comment.id === ID){
        return {...comment, replies: Reply.map(rep=>{
          const score = rep.score
@@ -114,20 +174,41 @@ export default function App(){
        return comment
      }
     })
+
+
+    newOne = newOne.map(one=>{
+      const Reply = one.replies
+      return {...one, replies: Reply.sort((a, b)=>{
+        return b.score - a.score
+      })}
+     })
+
+
     setComments(newOne)
   }
 
 
-  function handleReply(id){
+  function handleReply(comment){
     if(Reply){
+      const today = new Date()
+      const dd = today.getDate()
+      const mm = today.getMonth() + 1
+      const yy = today.getFullYear() % 100
+      const hr = today.getHours()
+      const mi = today.getMinutes()
+
+      const ID = comment.id
+      const reply = comment.replies
+      const username = comment.user.username
+      const createdAt = `${dd<10?`0${dd}`:dd}/${mm<10?`0${mm}`:mm}/${yy} @${hr<10 ?`0${hr}`:hr}:${mi<10 ?`0${mi}`:mi}`
       const newOne = comments.map(comment=>{
-        if(comment.id === id){
-          return {...comment, replies:[...comment.replies, {
-            "id": comments[id-1].replies.length+1,
+        if(comment.id === ID){
+          return {...comment, replies:[...reply, {
+            "id": reply.length+1,
             "content": Reply,
-            "createdAt": "just now",
+            "createdAt": createdAt,
             "score": 0,
-            "replyingTo": comments[id-1].user.username,
+            "replyingTo": username,
             "user": {
               "image": { 
                 "png": currentUser.image.png,
@@ -153,12 +234,22 @@ export default function App(){
     const ID  = comment.id
     const username = comment.user.username
 
+    const today = new Date()
+      const dd = today.getDate()
+      const mm = today.getMonth() + 1
+      const yy = today.getFullYear() % 100
+      const hr = today.getHours()
+      const mi = today.getMinutes()
+
+      const createdAt = `${dd<10?`0${dd}`:dd}/${mm<10?`0${mm}`:mm}/${yy} @${hr<10 ?`0${hr}`:hr}:${mi<10 ?`0${mi}`:mi}`
+
+
     const newOne = comments.map(comment=>{
       if(comment.id === ID){
         return {...comment, replies:[...reply,{
           "id": reply.length+1,
           "content": Reply,
-          "createdAt": "just now",
+          "createdAt": createdAt,
           "score": 0,
           "replyingTo": username,
           "user": {
@@ -291,7 +382,7 @@ export default function App(){
         Are you sure you want to delete this comment? This will remove the comment and can't be undone.
       </p>
       <div className="buttons">
-        <button style={{backgroundColor:"hsl(211, 10%, 45%)"}} onClick={()=>{setShowModal(false)}}>NO, CANCEL</button>
+        <button  style={{backgroundColor:"hsl(211, 10%, 45%)"}} onClick={()=>{setShowModal(false)}}>NO, CANCEL</button>
         <button style={{backgroundColor:"hsl(358, 79%, 66%)"}} onClick={()=>{handleDelete(index)}}>YES, DELETE</button>
       </div>
      </div>
@@ -308,7 +399,7 @@ export default function App(){
 
           {
       currentUser.username === comment.user.username? <div className="editdiv">
-        <div className="deleteicon" onClick={()=>{/*handleDelete(index)*/ setShowModal(true)}}>
+        <div className="deleteicon" onClick={()=>{ setShowModal(true)}}>
       <img src="/images/icon-delete.svg" alt="deleteicon" />
       <span><b style={{color:'hsl(358, 79%, 66%)'}}>Delete</b></span>
     </div >
@@ -336,14 +427,13 @@ export default function App(){
            <div className="user">
            <img src={comment.user.image.png} alt="userimage" />
             <span><b>{comment.user.username}</b></span>
-            {comment.user.username === currentUser.username && <span className='you' style={{backgroundColor:"hsl(238, 40%, 52%)", padding:'2px 7px',  color:'white'}}>you</span>}
+            {comment.user.username === currentUser.username && <span className='you' style={{backgroundColor:"hsl(238, 40%, 52%)", padding:'2px 7px',  color:'white', fontSize:"0.8em"}}>you</span>}
            </div>
-           
             <span className='createdAt' style={{color:'hsl(211, 10%, 45%)'}}>{comment.createdAt}</span>
             </div>
         {
       currentUser.username === comment.user.username? <div className="editdiv">
-        <div className="deleteicon" onClick={()=>{/*handleDelete(index)*/ setShowModal(true)}}>
+        <div className="deleteicon" onClick={()=>{ setShowModal(true)}}>
       <img src="/images/icon-delete.svg" alt="deleteicon" />
       <span><b style={{color:'hsl(358, 79%, 66%)'}}>Delete</b></span>
     </div >
@@ -373,18 +463,11 @@ export default function App(){
           </div>
           <br />
     </div>
-   {/*
-    comment.isreplying &&  <div className="replyArea">
-    <img src={currentUser.image.png} alt="userimage" />
-    <textarea name="commentArea" placeholder='Reply comment...' id="commentArea" />
-    <button>Reply</button>
-  </div>
-   */}
    <input type='checkbox' id={comment.user.username} />
    <div className="replyArea">
     <img src={currentUser.image.png} alt="userimage" />
     <textarea value={Reply} onChange={e=>{setReply(e.target.value)}} name="commentArea" placeholder='Reply comment...' id="commentArea" />
-    <button onClick={()=>{handleReply(comment.id)}}>Reply</button>
+    <button onClick={()=>{handleReply(comment)}}>Reply</button>
   </div>
     <br/>
         </div>
@@ -446,7 +529,7 @@ export default function App(){
       <div className="user">
       <img src={reply.user.image.png} alt="userimage" />
     <span><b>{reply.user.username}</b></span>
-    {reply.user.username === currentUser.username && <span style={{backgroundColor:"hsl(238, 40%, 52%)", padding:'2px 7px',  color:'white'}}>you</span>}
+    {reply.user.username === currentUser.username && <span style={{backgroundColor:"hsl(238, 40%, 52%)", padding:'2px 7px',  color:'white', fontSize:'0.8em'}}>you</span>}
       </div>
     <span className='createdAt' style={{color:'hsl(211, 10%, 45%)'}}>{reply.createdAt}</span>
     </div>
@@ -454,7 +537,7 @@ export default function App(){
       currentUser.username === reply.user.username? <div className="editdiv">
         <div className="deleteicon" onClick={()=>{setShowReplyModal(true)}}>
       <img src="/images/icon-delete.svg" alt="deleteicon" />
-      <span><b style={{color:'hsl(358, 79%, 66%)'}}>Delete</b></span>
+      <span className='delete'><b>Delete</b></span>
     </div >
         <label htmlFor={reply.content}>
         <div onClick={()=>{handleReplyEdit(reply, comment)}} className="replyicon">

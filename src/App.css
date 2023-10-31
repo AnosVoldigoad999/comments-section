@@ -64,6 +64,7 @@ body{
   align-items: center;
   justify-content: space-between;
   width: 105px;
+  
 }
 
 .commentContainer{
@@ -89,9 +90,9 @@ body{
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 180px;
+  width: 220px;
   /*min-width: 185px;*/
-  
+  /*border: 1px solid red;*/
 }
 
 .comment .userProf{
@@ -99,12 +100,12 @@ body{
   align-items: center;
   /*border: 1px solid red;*/
   justify-content: space-between;
-  width: 215px;
+  width: 240px;
 }
 
 .comment .userProf .user{
   /*border: 1px solid yellow;*/
-  width: 65%;
+  width: 55%;
 }
 
 .counter{
@@ -137,14 +138,18 @@ body{
   color: var(--Moderate-blue);
 }
 
+.createdAt{
+  font-size: 0.9em;
+}
 
 /*replies*/
 
 .editdiv{
   display: flex;
   justify-content: space-between;
-  width: 30%;
-  min-width: 113px;
+  width: 25%;
+  min-width: 90px;
+  /*border: 1px solid red;*/
   max-width: 115px;
 }
 
@@ -174,13 +179,16 @@ body{
 }
 
 .reply .header .prof{
-  width: 180px;
+  display: flex;
+  justify-content: space-between;
+  width: 250px;
   /*border: 1px solid red;*/
 }
 
 
 .reply .user, .replyuser .user{
-  width: 65%;
+  width: 50%;
+  /*border: 1px solid yellow;*/
 }
 
 
@@ -188,15 +196,16 @@ body{
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 50%;
-  min-width: 205px;
+  /*width: 50%;
+  min-width: 205px;*/
+  width: 240px;
  /*border: 1px solid red;*/
 }
 
 
 
 .userProf .user{
-  width: 65%;
+  width: 53%;
 
 }
 
@@ -421,6 +430,18 @@ border-radius: 10px;
 
 /*active*/
 
+.delete{
+  color: var(--Soft-Red);
+  transition: 0s;
+}
+
+
+
+.replyicon span{
+  transition: 0s;
+}
+
+
 button:hover{
   cursor: pointer;
 }
@@ -436,6 +457,40 @@ textarea:focus{
 .replyicon:hover, .deleteicon:hover{
   cursor: pointer;
 }
+
+
+.counter img:hover{
+  filter: brightness(50%);
+}
+
+button:hover{
+  background-color: var(--Light-grayish-blue);
+}
+
+.deleteicon:hover .delete{
+  color: var(--Pale-red);
+}
+
+.deleteicon:hover img{
+  filter: opacity(50%);
+}
+
+
+.replyicon:hover span{
+  color: var(--Light-grayish-blue);
+}
+
+
+.replyicon:hover img{
+  filter: opacity(50%);
+}
+
+
+
+.warning button:hover{
+  filter: opacity(70%);
+}
+
 
 
 /*active*/
@@ -655,7 +710,7 @@ textarea:focus{
   padding-left: 10px;
   padding-right: 10px;
   margin-left: 20px;
-  min-width: 268px;
+  min-width: 285px;
   max-width: 620px;
   /*border: 1px solid yellow;*/
 }
