@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import DATA from './data.json'
 
-/*Goodluck,  to whoever's reading my code :), or is it whomever???*/
+
 
 export default function App(){
   const [currentUser, setCurrentUser] = useState(DATA.currentUser)
