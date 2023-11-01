@@ -475,7 +475,14 @@ useEffect(()=>{
     </div>
    </label>
       </div>:
-       <label htmlFor={comment.user.username}> 
+       <label htmlFor={comment.user.username} onClick={()=>{setComments(comments.map(comm=>{
+        if(comm.id===comment.id){
+          const is = comm.isReplying
+          return {...comm, isReplying: !is}
+        }else{
+          return comm
+        }
+       }))}}> 
       <div className="replyicon">
       <img src="/images/icon-reply.svg" alt="replyicon" />
       <span><b>Reply</b></span>
@@ -574,7 +581,23 @@ useEffect(()=>{
     </div>
         </label>
       </div>:
-      <label htmlFor={reply.user.username}>
+      <label htmlFor={reply.user.username} onClick={()=>{
+        setComments(comments.map(comm=>{
+          if(comm.id === comment.id){
+            const Reply = comm.replies
+            return {...comm, replies: Reply.map(rep=>{
+              if(rep.id === reply.id){
+                const is = rep.isReplying
+                return {...rep, isReplying: !is}
+              } else{
+                return rep
+              }
+            })}
+          } else{
+            return comm
+          }
+        }))
+      }}>
       <div className="replyicon">
       <img src="/images/icon-reply.svg" alt="replyicon" />
       <span><b>Reply</b></span>
