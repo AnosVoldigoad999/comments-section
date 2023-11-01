@@ -30,7 +30,7 @@ Users should be able to:
 
 ### Links
 
-- Solution URL: [Add solution URL here](https://your-solution-url.com)
+- Solution URL: [https://www.frontendmentor.io/solutions/interactive-comments-section-solution-R8HDU-0k1H](https://www.frontendmentor.io/solutions/interactive-comments-section-solution-R8HDU-0k1H)
 - Live Site URL: [https://comments-section-orcin.vercel.app/](https://comments-section-orcin.vercel.app/)
 
 ## My process
