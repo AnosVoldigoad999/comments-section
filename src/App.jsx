@@ -21,15 +21,15 @@ export default function App(){
   const [itemToDelete, setItemToDelete] = useState('')
   const [showReplyModal, setShowReplyModal] = useState(false)
   const [replyToDelete, setreplyToDelete] = useState('')
-  const [delteComment, setDeleteComment] = useState(true)
+
 
 
 useEffect(()=>{
 
   const newOne  = comments.map(comment=>{
     const reply = comment.replies
-    return {...comment, isEditing:false, replies:reply.map(rep=>{
-      return {...rep, isEditing:false}
+    return {...comment, isEditing:false, isReplying:false , replies:reply.map(rep=>{
+      return {...rep, isEditing:false, isReplying:false}
     })}
   })
  
@@ -203,9 +203,9 @@ useEffect(()=>{
       const reply = comment.replies
       const username = comment.user.username
       const createdAt = `${dd<10?`0${dd}`:dd}/${mm<10?`0${mm}`:mm}/${yy} @${hr<10 ?`0${hr}`:hr}:${mi<10 ?`0${mi}`:mi}`
-      const newOne = comments.map(comment=>{
+      let newOne = comments.map(comment=>{
         if(comment.id === ID){
-          return {...comment, replies:[...reply, {
+          return {...comment, isReplying:false, replies:[...reply, {
             "id": reply.length+1,
             "content": Reply,
             "createdAt": createdAt,
@@ -232,52 +232,67 @@ useEffect(()=>{
 
 
   function handleReplyReply(id, comment, index){
-    const reply = comment.replies
-    const ID  = comment.id
-    const username = comment.user.username
-
-    const today = new Date()
-      const dd = today.getDate()
-      const mm = today.getMonth() + 1
-      const yy = today.getFullYear() % 100
-      const hr = today.getHours()
-      const mi = today.getMinutes()
-
-      const createdAt = `${dd<10?`0${dd}`:dd}/${mm<10?`0${mm}`:mm}/${yy} @${hr<10 ?`0${hr}`:hr}:${mi<10 ?`0${mi}`:mi}`
-
-
-    const newOne = comments.map(comment=>{
-      if(comment.id === ID){
-        return {...comment, replies:[...reply,{
-          "id": reply.length+1,
-          "content": Reply,
-          "createdAt": createdAt,
-          "score": 0,
-          "replyingTo": username,
-          "user": {
-            "image": { 
-              "png": currentUser.image.png,
-              "webp": currentUser.image.webp
-            },
-            "username": currentUser.username
-          }
-        } ]}
-      } else{
-        return comment
-      }
-    })
-    setComments(newOne)
-    setReply('')
+    if(Reply){
+      const reply = comment.replies
+      const ID  = comment.id
+      const username = comment.user.username
+  
+      const today = new Date()
+        const dd = today.getDate()
+        const mm = today.getMonth() + 1
+        const yy = today.getFullYear() % 100
+        const hr = today.getHours()
+        const mi = today.getMinutes()
+  
+        const createdAt = `${dd<10?`0${dd}`:dd}/${mm<10?`0${mm}`:mm}/${yy} @${hr<10 ?`0${hr}`:hr}:${mi<10 ?`0${mi}`:mi}`
+  
+  
+      let newOne = comments.map(comment=>{
+        if(comment.id === ID){
+          return {...comment, replies:[...reply,{
+            "id": reply.length+1,
+            "content": Reply,
+            "createdAt": createdAt,
+            "score": 0,
+            "replyingTo": username,
+            "user": {
+              "image": { 
+                "png": currentUser.image.png,
+                "webp": currentUser.image.webp
+              },
+              "username": currentUser.username
+            }
+          } ]}
+        } else{
+          return comment
+        }
+      })
+  
+      newOne = newOne.map(comment=>{
+        if(comment.id === ID){
+          const reply = comment.replies
+          return {...comment, replies: reply.map(rep=>{
+            if(rep.id===id){
+              return{...rep, isReplying:false}
+            } else{
+              return rep
+            }
+          })}
+        } else{
+          return comment
+        }
+      })
+  
+  
+  
+      setComments(newOne)
+      setReply('')
+    }
   }
 
 
   function handleDelete(item){
-    /*const newOne = comments.filter(comment=>{
-     return comment !=comments[index]
-    })
-    setComments(newOne)
 
-    console.log(comments[index])*/
 
     const newOne = comments.filter(comment=>{
       return comment != item
@@ -483,7 +498,7 @@ useEffect(()=>{
             </div>
         {
       currentUser.username === comment.user.username? <div className="editdiv">
-        <div className="deleteicon" onClick={()=>{ /*setShowModal(true)*/ handleModal(comment)  }}>
+        <div className="deleteicon" onClick={()=>{ handleModal(comment)  }}>
       <img src="/images/icon-delete.svg" alt="deleteicon" />
       <span><b style={{color:'hsl(358, 79%, 66%)'}}>Delete</b></span>
     </div >
@@ -494,7 +509,14 @@ useEffect(()=>{
     </div>
    </label>
       </div>:
-       <label htmlFor={comment.user.username}> 
+       <label htmlFor={comment.user.username} onClick={()=>{setComments(comments.map(comm=>{
+        if(comm.id===comment.id){
+          const is = comm.isReplying
+          return {...comm, isReplying: !is}
+        }else{
+          return comm
+        }
+       }))}}> 
       <div className="replyicon">
       <img src="/images/icon-reply.svg" alt="replyicon" />
       <span><b>Reply</b></span>
@@ -513,7 +535,7 @@ useEffect(()=>{
           </div>
           <br />
     </div>
-   <input type='checkbox' id={comment.user.username} />
+   <input type='checkbox' id={comment.user.username} checked={comment.isReplying} />
    <div className="replyArea">
     <img src={currentUser.image.png} alt="userimage" />
     <textarea value={Reply} onChange={e=>{setReply(e.target.value)}} name="commentArea" placeholder='Reply comment...' id="commentArea" />
@@ -584,7 +606,23 @@ useEffect(()=>{
     </div>
         </label>
       </div>:
-      <label htmlFor={reply.user.username}>
+      <label htmlFor={reply.user.username} onClick={()=>{
+        setComments(comments.map(comm=>{
+          if(comm.id === comment.id){
+            const Reply = comm.replies
+            return {...comm, replies: Reply.map(rep=>{
+              if(rep.id === reply.id){
+                const is = rep.isReplying
+                return {...rep, isReplying: !is}
+              } else{
+                return rep
+              }
+            })}
+          } else{
+            return comm
+          }
+        }))
+      }}>
       <div className="replyicon">
       <img src="/images/icon-reply.svg" alt="replyicon" />
       <span><b>Reply</b></span>
@@ -602,7 +640,7 @@ useEffect(()=>{
   </div>
   <br />
     </div>
-    <input type='checkbox' id={reply.user.username} />
+    <input type='checkbox' id={reply.user.username} checked={reply.isReplying} />
     <div className="replyAreaForReply">
 <img src={currentUser.image.png} alt="userimage" />
 <textarea value={Reply} onChange={(e)=>setReply(e.target.value)} name="commentArea" placeholder='Reply comment...' id="commentArea" />
