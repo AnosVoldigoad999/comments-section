@@ -18,7 +18,9 @@ export default function App(){
   const [Reply, setReply] = useState('')
   const [edit, setEdit] = useState('')
   const [showModal, setShowModal] = useState(false)
+  const [itemToDelete, setItemToDelete] = useState('')
   const [showReplyModal, setShowReplyModal] = useState(false)
+  const [replyToDelete, setreplyToDelete] = useState('')
   const [delteComment, setDeleteComment] = useState(true)
 
 
@@ -269,21 +271,36 @@ useEffect(()=>{
   }
 
 
-  function handleDelete(index){
-    const newOne = comments.filter(comment=>{
+  function handleDelete(item){
+    /*const newOne = comments.filter(comment=>{
      return comment !=comments[index]
     })
     setComments(newOne)
+
+    console.log(comments[index])*/
+
+    const newOne = comments.filter(comment=>{
+      return comment != item
+    })
+
+    setComments(newOne)
+
+
+
     setShowModal(false)
   }
 
 
-  function handleDeleteReply(index, comment, id){
+  function handleDeleteReply(comment, reply){
     const ID = comment.id
-    const reply = comment.replies
+    const Reply = comment.replies
+   
+
     const newOne = comments.map(comment=>{
-      if(comment.id === ID){
-        return {...comment, replies:reply.filter(rep=>{return rep.id != id})}
+      if(comment.id===ID){
+        return {...comment, replies: Reply.filter(rep=>{
+          return rep != reply
+        })}
       } else{
         return comment
       }
@@ -367,15 +384,23 @@ useEffect(()=>{
   }
   
 
+  function handleModal(comment){
+    setShowModal(true)
+    setItemToDelete(comment)
+  }
+
+  function handleReplyModal(comment, reply){
+    setShowReplyModal(true)
+    setItemToDelete(comment)
+    setreplyToDelete(reply)
+  }
+
  
 
   return<>
   <div className="container">
-    <div className="comments">
-      {comments.map((comment, index)=>{
-        return <div className='commentContainer'>
-            <input type='checkbox' checked={showModal} />
-            <div className="modal">
+  <input type='checkbox' checked={showModal} />
+  <div className="modal">
      <div className="warning">
       <h3>Delete comment</h3>
      <p>
@@ -383,10 +408,35 @@ useEffect(()=>{
       </p>
       <div className="buttons">
         <button  style={{backgroundColor:"hsl(211, 10%, 45%)"}} onClick={()=>{setShowModal(false)}}>NO, CANCEL</button>
-        <button style={{backgroundColor:"hsl(358, 79%, 66%)"}} onClick={()=>{handleDelete(index)}}>YES, DELETE</button>
+        <button style={{backgroundColor:"hsl(358, 79%, 66%)"}} onClick={()=>{handleDelete(itemToDelete)}}>YES, DELETE</button>
       </div>
      </div>
     </div>
+
+
+   <div>
+   <input type='checkbox' checked={showReplyModal} />
+            <div className="modal">
+     <div className="warning">
+      <h3>Delete comment</h3>
+     <p>
+        Are you sure you want to delete this comment? This will remove the comment and can't be undone.
+      </p>
+      <div className="buttons">
+        <button style={{backgroundColor:"hsl(211, 10%, 45%)"}} onClick={()=>{setShowReplyModal(false)}}>NO, CANCEL</button>
+        <button style={{backgroundColor:"hsl(358, 79%, 66%)"}} onClick={()=>{handleDeleteReply(itemToDelete, replyToDelete)}}>YES, DELETE</button>
+      </div>
+     </div>
+    </div>
+   </div>
+
+
+
+    <div className="comments">
+      {comments.map((comment, index)=>{
+        return <div className='commentContainer'>
+           
+            
           <div className='commentcover'> 
         <div className="comment" key={index}>
 
@@ -399,7 +449,7 @@ useEffect(()=>{
 
           {
       currentUser.username === comment.user.username? <div className="editdiv">
-        <div className="deleteicon" onClick={()=>{ setShowModal(true)}}>
+        <div className="deleteicon" onClick={()=>{handleModal(comment)}}>
       <img src="/images/icon-delete.svg" alt="deleteicon" />
       <span><b style={{color:'hsl(358, 79%, 66%)'}}>Delete</b></span>
     </div >
@@ -433,7 +483,7 @@ useEffect(()=>{
             </div>
         {
       currentUser.username === comment.user.username? <div className="editdiv">
-        <div className="deleteicon" onClick={()=>{ setShowModal(true)}}>
+        <div className="deleteicon" onClick={()=>{ /*setShowModal(true)*/ handleModal(comment)  }}>
       <img src="/images/icon-delete.svg" alt="deleteicon" />
       <span><b style={{color:'hsl(358, 79%, 66%)'}}>Delete</b></span>
     </div >
@@ -480,19 +530,7 @@ useEffect(()=>{
 
 
     return <div className="replycover">
-         <input type='checkbox' checked={showReplyModal} />
-            <div className="modal">
-     <div className="warning">
-      <h3>Delete comment</h3>
-     <p>
-        Are you sure you want to delete this comment? This will remove the comment and can't be undone.
-      </p>
-      <div className="buttons">
-        <button style={{backgroundColor:"hsl(211, 10%, 45%)"}} onClick={()=>{setShowReplyModal(false)}}>NO, CANCEL</button>
-        <button style={{backgroundColor:"hsl(358, 79%, 66%)"}} onClick={()=>{handleDeleteReply(index, comment, reply.id)}}>YES, DELETE</button>
-      </div>
-     </div>
-    </div>
+         
       <div className={currentUser.username === reply.user.username?"replyuser":"reply"} key={index}>
  <div className="counterDiv">
  <div className="counter">
@@ -503,7 +541,7 @@ useEffect(()=>{
 
       {
       currentUser.username === reply.user.username? <div className="editdiv">
-        <div className="deleteicon" onClick={()=>{setShowReplyModal(true)}}>
+        <div className="deleteicon" onClick={()=>{handleReplyModal(comment, reply)}}>
       <img src="/images/icon-delete.svg" alt="deleteicon" />
       <span><b style={{color:'hsl(358, 79%, 66%)'}}>Delete</b></span>
     </div >
@@ -535,7 +573,7 @@ useEffect(()=>{
     </div>
     {
       currentUser.username === reply.user.username? <div className="editdiv">
-        <div className="deleteicon" onClick={()=>{setShowReplyModal(true)}}>
+        <div className="deleteicon" onClick={()=>{handleReplyModal(comment, reply)}}>
       <img src="/images/icon-delete.svg" alt="deleteicon" />
       <span className='delete'><b>Delete</b></span>
     </div >
