@@ -31,12 +31,12 @@ useEffect(()=>{
     return {...comment, isEditing:false, isReplying:false , replies:reply.map(rep=>{
       return {...rep, isEditing:false, isReplying:false}
     })}
-  })
+  }) //adding extra stuff for later
  
  
   setComments(newOne)
   comments.sort((a, b)=>{
-    return b.score - a.score
+    return b.score - a.score //sort in descending order according to their scores
   })
 
 
@@ -101,7 +101,7 @@ useEffect(()=>{
 
     newOne.sort((a, b)=>{
       return b.score - a.score
-    })
+    })//sort the comments based on their score
 
     setComments(newOne)
 
@@ -124,7 +124,7 @@ useEffect(()=>{
 
     newOne.sort((a, b)=>{
       return b.score - a.score
-    })
+    })//sort the comments based on their score
 
     setComments(newOne)
   }
@@ -154,7 +154,7 @@ useEffect(()=>{
     return {...one, replies: Reply.sort((a, b)=>{
       return b.score - a.score
     })}
-   })
+   })//sort the replies based on their score
 
     setComments(newOne)
   }
@@ -183,7 +183,7 @@ useEffect(()=>{
       return {...one, replies: Reply.sort((a, b)=>{
         return b.score - a.score
       })}
-     })
+     })//sort the replies based on their score
 
 
     setComments(newOne)
@@ -235,8 +235,16 @@ useEffect(()=>{
     if(Reply){
       const reply = comment.replies
       const ID  = comment.id
-      const username = comment.user.username
-  
+      //const username = comment.user.username
+      let username = ""
+      
+      for(let i=0; i<comment.replies.length; i++){ //something to run through the comment's replies to see which one matchess
+        const rep = comment.replies[i] 
+        if(rep.id===id){//if it finds a match
+          username = rep.user.username //save the username to the username variable
+        }
+      }
+
       const today = new Date()
         const dd = today.getDate()
         const mm = today.getMonth() + 1
@@ -251,7 +259,7 @@ useEffect(()=>{
         if(comment.id === ID){
           return {...comment, replies:[...reply,{
             "id": reply.length+1,
-            "content": Reply,
+            "content": Reply,//the state
             "createdAt": createdAt,
             "score": 0,
             "replyingTo": username,
@@ -262,7 +270,7 @@ useEffect(()=>{
               },
               "username": currentUser.username
             }
-          } ]}
+          } ]} //replyyy
         } else{
           return comment
         }
@@ -273,7 +281,7 @@ useEffect(()=>{
           const reply = comment.replies
           return {...comment, replies: reply.map(rep=>{
             if(rep.id===id){
-              return{...rep, isReplying:false}
+              return{...rep, isReplying:false} //to remove the place where you type your reply
             } else{
               return rep
             }
@@ -328,7 +336,7 @@ useEffect(()=>{
 
 
   function handleReplyEdit (reply, comment){
-    const content = reply.content
+    const content = reply.content //previous reply
     const Reply = comment.replies
     const ID = comment.id
     const id = reply.id
@@ -371,7 +379,7 @@ useEffect(()=>{
   }
 
   function handleEdit(comment){
-    const content = comment.content
+    const content = comment.content //previous comment
     const ID = comment.id
     setEdit(content)
     const newOne = comments.map(comment=>{
@@ -415,7 +423,7 @@ useEffect(()=>{
   return<>
   <div className="container">
   <input type='checkbox' checked={showModal} />
-  <div className="modal">
+  <div style={{border:"1px solid red"}} className="modal">
      <div className="warning">
       <h3>Delete comment</h3>
      <p>
@@ -449,21 +457,21 @@ useEffect(()=>{
 
     <div className="comments">
       {comments.map((comment, index)=>{
-        return <div className='commentContainer'>
+        return <div className='commentContainer'>{/*entire comment starts here(plus replies and all)*/}
            
             
           <div className='commentcover'> 
         <div className="comment" key={index}>
 
-          <div className="counterDiv">
-          <div className="counter">
+          <div  className="counterDiv">
+          <div  className="counter">
             <img onClick={()=>{handleAdd(comment.id)}} src="/images/icon-plus.svg" alt="plus" />
             <b>{comment.score}</b>
             <img onClick={()=>{handleSub(comment.id)}}  src="/images/icon-minus.svg" alt="minus" />
           </div>
 
           {
-      currentUser.username === comment.user.username? <div className="editdiv">
+      currentUser.username === comment.user.username? <div  className="editdiv">{/*delete and edit thing for mobile(user) cuz the reply and edit things would move to the bottom of the comment thing sha, thats why i have 2 */}
         <div className="deleteicon" onClick={()=>{handleModal(comment)}}>
       <img src="/images/icon-delete.svg" alt="deleteicon" />
       <span><b style={{color:'hsl(358, 79%, 66%)'}}>Delete</b></span>
@@ -475,10 +483,10 @@ useEffect(()=>{
     </div>
    </label>
       </div>:
-       <label htmlFor={comment.user.username} onClick={()=>{setComments(comments.map(comm=>{
+       <label  htmlFor={comment.user.username} onClick={()=>{setComments(comments.map(comm=>{{/*reply thing for mobile */}
         if(comm.id===comment.id){
           const is = comm.isReplying
-          return {...comm, isReplying: !is}
+          return {...comm, isReplying: !is} //basically set the isReplying key to true or false, toggling the reply section 
         }else{
           return comm
         }
@@ -558,7 +566,7 @@ useEffect(()=>{
         {comment.replies.map((reply, index)=>{
 
 
-    return <div className="replycover">
+    return <div className="replycover"> {/*replies start here */}
          
       <div className={currentUser.username === reply.user.username?"replyuser":"reply"} key={index}>
  <div className="counterDiv">
@@ -672,10 +680,10 @@ useEffect(()=>{
 </div>
 <br />
     </div>
-   })}
+   })} {/*replies end here */}
       </div>
       </div>
-      })}
+      })}{/*entire comment ends here */}
     </div>
   
   
